@@ -1,2 +1,6 @@
-# aoc-2022
-Advent of Code 2022
+# Advent of Code
+
+solutions to aoc
+
+[2022](.)
+[2015](./2015/)
