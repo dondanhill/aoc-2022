@@ -2,5 +2,5 @@
 
 solutions to aoc
 
-[2022](./README.md)
+[2022](#)
 [2015](./2015/)
