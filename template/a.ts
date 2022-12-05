@@ -1,2 +1,2 @@
-// const input = await Deno.readTextFile("./input.txt");
+// const input = await Deno.readTextFile("./input.test.txt");
 // const data = input.split("\n");
