@@ -1,3 +1,4 @@
+// TODO - fix ts lint
 const input = await Deno.readTextFile("./input.txt");
 const [stackData, movesData] = input.split("\n\n");
 
@@ -27,4 +28,6 @@ moves.forEach((move) => {
   console.log(stacks);
 });
 
-console.log(stacks?.reduce((acc: string, stack) => acc + stack[stack.length - 1], ""));
+console.log(
+  stacks?.reduce((acc: string, stack) => acc + stack[stack.length - 1], "")
+);

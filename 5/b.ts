@@ -1,3 +1,4 @@
+// TODO - fix ts lint
 const input = await Deno.readTextFile("./input.txt");
 const [stackData, movesData] = input.split("\n\n")
 
