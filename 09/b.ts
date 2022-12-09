@@ -6,14 +6,13 @@ type TPos = {
   x: number;
   y: number;
 };
-const H: TPos = {
-  x: 0,
-  y: 0,
-};
-const T: TPos = {
-  x: 0,
-  y: 0,
-};
+
+const knots = Array.from(Array(10)).map((_) =>
+  Object.assign({
+    x: 0,
+    y: 0,
+  } as TPos)
+);
 
 const visits = new Map();
 visits.set("0-0", 1);
@@ -34,6 +33,7 @@ moves.forEach((move) => {
       moveHead("x", -steps);
       break;
     default:
+      console.log(dir);
       throw new Error(`unexpected direction: ${dir}`);
   }
 });
@@ -43,61 +43,47 @@ console.log(visits.size);
 function moveHead(key: string, steps: number) {
   const absSteps = Math.abs(steps);
   for (let i = 1; i <= absSteps; i++) {
-    H[key as keyof TPos] += (1 * steps) / absSteps;
+    knots[0][key] += (1 * steps) / absSteps;
 
-    moveTail();
-    visits.set(`${T.x}-${T.y}`, (visits.get(`${T.x}-${T.y}`) || 0) + 1);
+    let index = 0;
+    while (index < 9 && didMoveTail(knots[index], knots[index + 1])) {
+      index++;
+    }
+
+    if (index === 9) {
+      const T = knots[9];
+      visits.set(`${T.x}-${T.y}`, (visits.get(`${T.x}-${T.y}`) || 0) + 1);
+    }
   }
 }
 
-function moveTail() {
+function didMoveTail(H: TPos, T: TPos) {
   const diff = {
     x: H.x - T.x,
     absX: Math.abs(H.x - T.x),
     y: H.y - T.y,
     absY: Math.abs(H.y - T.y),
   };
-
-  if (diff.absX === 1 && diff.absY === 1) {
-    return;
+  if (diff.absX === 2 && diff.absY === 2) {
+    T.x = H.x > T.x ? H.x - 1 : H.x + 1;
+    T.y = H.y > T.y ? H.y - 1 : H.y + 1;
+    return true;
   }
-  if (diff.y === 0) {
-    if (diff.x > 0) {
-      while (T.x < H.x - 1) {
-        T.x++;
-      }
-    } else if (diff.x < 0) {
-      while (T.x > H.x + 1) {
-        T.x--;
-      }
-    }
-    return;
-  }
-
-  if (diff.x === 0) {
-    if (diff.y > 0) {
-      while (T.y < H.y - 1) {
-        T.y++;
-      }
-    } else if (diff.y < 0) {
-      while (T.y > H.y + 1) {
-        T.y--;
-      }
-    }
-    return;
-  }
-
-  if (diff.absX === 1 && diff.absY === 2) {
+  if (diff.absY === 2) {
     T.x = H.x;
     T.y = H.y > T.y ? H.y - 1 : H.y + 1;
-    return;
+    return true;
   }
 
-  if (diff.absY === 1 && diff.absX === 2) {
+  if (diff.absX === 2) {
     T.x = H.x > T.x ? H.x - 1 : H.x + 1;
     T.y = H.y;
-    return;
+    return true;
+  }
+  if (diff.absX > 2 || diff.absY > 2) {
+    console.log(H, T, diff);
+    throw new Error("unexpected diff");
   }
 
-  new Error(`unexpected move: ${diff}`);
+  return false;
 }
