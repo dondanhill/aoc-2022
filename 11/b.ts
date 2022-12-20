@@ -3,7 +3,6 @@ const data = input.split("\n\n");
 
 type TMonkey = {
   items: number[];
-  newitems: number[] | never[];
   applyOperation: (v: number) => (a: number) => number;
   testDivision: number;
   testTrue: number;
@@ -15,7 +14,8 @@ function inspectItems(monkey: TMonkey) {
   const items = monkey.items.map((item) => Number(monkey.applyOperation(item)));
   monkey.inspectCount += items.length;
   items.forEach((worrylevel) => {
-    const newlevel = Math.floor(worrylevel / 3);
+    // console.log(worrylevel);
+    const newlevel = Math.floor(worrylevel / 1) % modulo;
     let newmonkeyid = 0;
     if (newlevel % monkey.testDivision === 0) {
       newmonkeyid = monkey.testTrue;
@@ -34,7 +34,6 @@ const monkeys = data
         .split(":")[1]
         .split(",")
         .map((item) => Number(item)),
-      newitems: [],
       applyOperation: createOperation(
         lines[2].split(":")[1].split("=")[1].trim()
       ),
@@ -72,12 +71,23 @@ function createOperation(operationText: string): (v: number) => number {
   };
 }
 
-for (let i = 0; i < 20; i++) {
-  monkeys.forEach((monkey) => {
+const modulo = monkeys.reduce((acc, monkey) => acc * monkey.testDivision, 1);
+for (let i = 0; i < 10000; i++) {
+  monkeys.forEach((monkey, index) => {
+    // console.log("index", index);
     if (monkey.items.length > 0) inspectItems(monkey);
     monkey.items = [];
   });
+  if (i === 0) {
+    monkeys.forEach((monkey, index) => {
+      console.log(`Monkey ${index} => ${monkey.inspectCount} times.`);
+    });
+  }
 }
+
+monkeys.forEach((monkey, index) => {
+  console.log(`Monkey ${index} => ${monkey.inspectCount} times.`);
+});
 
 console.log(
   monkeys
