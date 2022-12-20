@@ -1,5 +1,8 @@
 const input = await Deno.readTextFile("./input.txt");
-const data = input.split("\n\n").map((pair) => pair.split("\n"));
+const data = input
+  .split("\n\n")
+  .map((pair) => pair.split("\n").map((part) => JSON.parse(part)));
+
 const compare = ([left, right]) => {
   if ([left, right].every(Number.isInteger)) {
     if (left < right) return true;
@@ -19,23 +22,16 @@ const compare = ([left, right]) => {
   return compare([[left].flat(), [right].flat()]);
 };
 
+const dividers = [[[2]], [[6]]];
+console.log(data);
+console.log(data.flat());
 console.log(
-  data.reduce((acc, pair, index) => {
-    const [lhs, rhs] = pair;
-
-    const left: [] = JSON.parse(lhs);
-    const right: [] = JSON.parse(rhs);
-    if (compare([left, right])) {
-      // console.log(lhs);
-      // console.log(rhs);
-      // console.log(index, true);
-      return acc + index + 1;
-    }
-    // console.log(lhs);
-    // console.log(rhs);
-    // console.log(index, false);
-    return acc;
-  }, 0)
+  [...data.flat(), ...dividers]
+    .sort((left, right) => compare([right, left]) - compare([left, right]))
+    .reduce(
+      (acc, pair, index) => (dividers.includes(pair) ? acc * (index + 1) : acc),
+      1
+    )
 
   // data.map((pair, index) => {
   //   const [lhs, rhs] = pair;
