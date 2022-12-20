@@ -45,14 +45,19 @@ data.forEach((line) => {
 });
 
 function getMapPoint(row: number, col: number) {
-  return map.get(`${col}-${row}`);
+  const point = map.get(`${col}-${row}`);
+  if (point === undefined) {
+    if (row === height + 1) return "#";
+    return ".";
+  }
+  return point;
 }
 function setMapPoint(row: number, col: number, value: string) {
   map.set(`${col}-${row}`, value);
 }
 
 function drawMap() {
-  for (let row = height - 20; row < height; row++) {
+  for (let row = 0; row < height + 2; row++) {
     let grid = "";
     for (let col = minX; col <= maxX; col++) {
       grid += getMapPoint(row, col);
@@ -62,7 +67,7 @@ function drawMap() {
 }
 
 function canDropLeft(row: number, col: number): boolean {
-  return getMapPoint(row, col - 1) === "." || col - 1 < minX;
+  return getMapPoint(row, col - 1) === ".";
 }
 
 function canDropRight(row: number, col: number): boolean {
@@ -74,10 +79,10 @@ function addSand() {
   let col = 500;
 
   while (true) {
-    let x = 0;
     switch (getMapPoint(row, col)) {
       case "#":
       case "o":
+        if (row === 0 && col === 500) return true;
         if (canDropLeft(row, col)) {
           col--;
         } else if (canDropRight(row, col)) {
@@ -88,17 +93,18 @@ function addSand() {
         }
         break;
     }
-    x++;
     row++;
-    if (col < minX) return;
-    if (row > height) return;
-    if (x > 100000) {
-      return console.log("broken");
-    }
+    // if (col < minX) return;
+    if (row > height + 2) return;
   }
 }
 
-for (let i = 0; i < 2000; i++) addSand();
+// for (let i = 0; i < 20000; i++) {
+while (!addSand());
+// drawMap();
+// console.log(
+//   Array.from(map.values()).reduce((count, spot) => (count += spot === "o"), 0)
+// );
 
 drawMap();
 
